@@ -2,28 +2,29 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Blank</ion-title>
+        <ion-title>SCANNER</ion-title>
       </ion-toolbar>
     </ion-header>
     
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Blank</ion-title>
+          <ion-title size="large">SCANNER</ion-title>
         </ion-toolbar>
       </ion-header>
-    
+
       <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+        {{ result }}
+        <button class="btn" @click="startScanner()">SCAN</button>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts">
+<script>
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { defineComponent } from 'vue';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 export default defineComponent({
   components: {
@@ -32,11 +33,41 @@ export default defineComponent({
     IonPage,
     IonTitle,
     IonToolbar
+  },
+  data() {
+    return {
+      result: null,
+      isFlashOn: false,
+    }
+  },
+  methods: {
+    async startScanner() {
+      BarcodeScanner.scan({
+        prompt : "Place a barcode inside the scan area, :)", // Android
+        showFlipCameraButton : true,
+        showTorchButton : true,
+        disableAnimations : true,
+        disableSuccessBeep: false
+      }).then(barcodeData => {
+        console.log('Barcode data', barcodeData)
+        this.result = barcodeData;
+      }).catch(err => {
+        console.log('Error', err)
+      });
+    },
   }
 });
 </script>
 
-<style scoped>
+<style>
+html, body {
+  background: transparent;
+}
+
+ion-content {
+  --background: transparent;
+}
+
 #container {
   text-align: center;
   
@@ -63,5 +94,9 @@ export default defineComponent({
 
 #container a {
   text-decoration: none;
+}
+
+.btn {
+  padding: 50px 100px;
 }
 </style>
